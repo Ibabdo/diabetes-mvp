@@ -25,3 +25,10 @@ jobs:
           --region europe-west1 \
           --allow-unauthenticated \
           --source .
+- name: Enable Required APIs
+  run: |
+    gcloud services enable \
+      cloudresourcemanager.googleapis.com \
+      artifactregistry.googleapis.com \
+      cloudbuild.googleapis.com \
+      run.googleapis.com
