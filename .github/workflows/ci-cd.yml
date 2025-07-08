@@ -3,32 +3,34 @@ on: [push]
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: 'read'
+      id-token: 'write'
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      
-    # ADD THESE 2 CRITICAL STEPS
-    - name: Authenticate to Google Cloud
+    - uses: actions/checkout@v4
+    
+    - name: Authenticate
       uses: google-github-actions/auth@v1
       with:
         credentials_json: ${{ secrets.GCP_SA_KEY }}
         
-    - name: Set up Google Cloud SDK
+    - name: Setup GCloud
       uses: google-github-actions/setup-gcloud@v1
-      
-    # MODIFIED DEPLOY COMMAND
-    - name: Deploy to Cloud Run
+      with:
+        project_id: ${{ secrets.GCP_PROJECT_ID }}
+        
+    # NEW STEP ADDED HERE
+    - name: Enable Required APIs
       run: |
-        gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
+        gcloud services enable \
+          cloudresourcemanager.googleapis.com \
+          artifactregistry.googleapis.com \
+          cloudbuild.googleapis.com \
+          run.googleapis.com
+        
+    - name: Deploy
+      run: |
         gcloud run deploy diabetes-mvp \
-          --platform managed \
-          --region europe-west1 \
+          --region=europe-west1 \
           --allow-unauthenticated \
           --source .
-- name: Enable Required APIs
-  run: |
-    gcloud services enable \
-      cloudresourcemanager.googleapis.com \
-      artifactregistry.googleapis.com \
-      cloudbuild.googleapis.com \
-      run.googleapis.com
