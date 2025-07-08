@@ -7,8 +7,9 @@ jobs:
       contents: 'read'
       id-token: 'write'
     steps:
-    - uses: actions/checkout@v4
-    
+    - name: Checkout
+      uses: actions/checkout@v4
+      
     - name: Authenticate
       uses: google-github-actions/auth@v1
       with:
@@ -19,14 +20,8 @@ jobs:
       with:
         project_id: ${{ secrets.GCP_PROJECT_ID }}
         
-    # NEW STEP ADDED HERE
-    - name: Enable Required APIs
-      run: |
-        gcloud services enable \
-          cloudresourcemanager.googleapis.com \
-          artifactregistry.googleapis.com \
-          cloudbuild.googleapis.com \
-          run.googleapis.com
+    # REMOVED API ENABLEMENT STEP
+    # APIs are now manually enabled
         
     - name: Deploy
       run: |
