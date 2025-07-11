@@ -25,21 +25,29 @@ if not st.session_state.consent:
         st.stop()
 
 # Main UI
-st.sidebar.title("Navigation")
-page = st.sidebar.radio("Go to", ["Data Input", "Get Advice", "GP Report"])
-
-if page == "Data Input":
-    st.title("Your Health Data")
-    with st.form("health_form"):
+# Find the form section (around line 20-30)
+# REPLACE the existing form with:
+with st.form("health_form"):
+    col1, col2 = st.columns(2)
+    with col1:
         st.session_state.patient_data['name'] = st.text_input("Full Name")
-        st.session_state.patient_data['hba1c'] = st.slider("HbA1c (mmol/mol)", 20, 150, 50)
+        st.session_state.patient_data['age'] = st.number_input("Age", 18, 100, 45)
         st.session_state.patient_data['weight'] = st.number_input("Weight (kg)", 30, 300, 70)
-        st.session_state.patient_data['bp'] = st.text_input("Blood Pressure (e.g., 120/80)")
-        st.session_state.patient_data['activity'] = st.selectbox("Activity Level", ["Low", "Medium", "High"])
-        st.session_state.patient_data['meds'] = st.text_area("Current Medications")
+        st.session_state.patient_data['bp'] = st.text_input("Blood Pressure (e.g. 120/80)")
         
-        if st.form_submit_button("Save Data"):
-            st.success("Data saved!")
+    with col2:
+        st.session_state.patient_data['hba1c'] = st.slider("HbA1c (mmol/mol)", 20, 150, 50)
+        st.session_state.patient_data['ethnicity'] = st.selectbox("Ethnicity", 
+            ["White", "South Asian", "Black African", "Mixed/Other"])
+        st.session_state.patient_data['activity'] = st.selectbox("Weekly Activity", 
+            ["<30 mins", "30-150 mins", "150+ mins"])
+    
+    st.session_state.patient_data['meds'] = st.text_area("Current Medications")
+    st.session_state.patient_data['smoker'] = st.checkbox("Current smoker")
+    st.session_state.patient_data['family_history'] = st.checkbox("Family history of diabetes")
+    
+    if st.form_submit_button("Save Data"):
+        st.success("Data saved!")
 
 elif page == "Get Advice":
     st.title("Personalized Advice")
